@@ -48,6 +48,7 @@ func CustomizeService(svc *corev1.Service, cr *appsodyv1alpha1.AppsodyApplicatio
 	if len(svc.Spec.Ports) == 0 {
 		svc.Spec.Ports = append(svc.Spec.Ports, corev1.ServicePort{})
 	}
+	svc.Spec.Ports[0].Name = "http"
 	svc.Spec.Ports[0].Port = cr.Spec.Service.Port
 	svc.Spec.Ports[0].TargetPort = intstr.FromInt(int(cr.Spec.Service.Port))
 	svc.Spec.Type = *cr.Spec.Service.Type

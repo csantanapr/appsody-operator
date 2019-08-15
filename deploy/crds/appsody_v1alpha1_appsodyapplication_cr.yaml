@@ -4,5 +4,19 @@ metadata:
   name: example-appsodyapplication
 spec:
   # Add fields here
-  applicationImage: openliberty/open-liberty:microProfile2-ubi-min
+  applicationImage: frankji/liberty-ltf
   stack: java-microprofile
+  livenessProbe:
+    failureThreshold: 3
+    httpGet:
+      path: /
+      port: 9080
+    initialDelaySeconds: 60
+    periodSeconds: 5
+  readinessProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /
+      port: 9080
+    initialDelaySeconds: 30
+    periodSeconds: 5

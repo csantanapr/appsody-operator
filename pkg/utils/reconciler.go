@@ -7,6 +7,7 @@ import (
 	"time"
 
 	appsodyv1alpha1 "github.com/appsody-operator/pkg/apis/appsody/v1alpha1"
+	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -224,21 +225,11 @@ func (r *ReconcilerBase) ManageSuccess(conditionType appsodyv1alpha1.StatusCondi
 }
 
 // IsGroupVersionSupported ...
-func (r *ReconcilerBase) IsGroupVersionSupported(groupVersion string) (bool, error) {
-	cli, err := r.GetDiscoveryClient()
+func (r *ReconcilerBase) IsGroupVersionSupported(groupVersion string, kind string) (bool, error) {
+	dc, err := r.GetDiscoveryClient()
 	if err != nil {
 		log.Error(err, "Failed to return a discovery client for the current reconciler")
 		return false, err
 	}
-
-	_, err = cli.ServerResourcesForGroupVersion(groupVersion)
-	if err != nil {
-		if apierrors.IsNotFound(err) {
-			return false, nil
-		}
-
-		return false, err
-	}
-
-	return true, nil
+	return k8sutil.ResourceExists(dc, groupVersion, kind)
 }

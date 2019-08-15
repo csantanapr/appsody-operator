@@ -228,7 +228,7 @@ func (r *ReconcileAppsodyApplication) Reconcile(request reconcile.Request) (reco
 	}
 
 	// Check if Knative is supported and delete Knative service if supported
-	if ok, err = r.IsGroupVersionSupported(servingv1alpha1.SchemeGroupVersion.String()); err != nil {
+	if ok, err = r.IsGroupVersionSupported(servingv1alpha1.SchemeGroupVersion.String(), "Service"); err != nil {
 		reqLogger.Error(err, fmt.Sprintf("Failed to check if %s is supported", servingv1alpha1.SchemeGroupVersion.String()))
 		r.ManageError(err, appsodyv1alpha1.StatusConditionTypeReconciled, instance)
 	} else if ok {
@@ -251,6 +251,22 @@ func (r *ReconcileAppsodyApplication) Reconcile(request reconcile.Request) (reco
 		reqLogger.Error(err, "Failed to reconcile Service")
 		return r.ManageError(err, appsodyv1alpha1.StatusConditionTypeReconciled, instance)
 	}
+
+	// if ok, err := r.IsGroupVersionSupported("monitoring.coreos.com/v1", "ServiceMonitor"); err != nil {
+	// 	reqLogger.Error(err, fmt.Sprintf("Failed to check if %s is supported", "monitoring.coreos.com/v1"))
+	// 	r.ManageError(err, appsodyv1alpha1.StatusConditionTypeReconciled, instance)
+	// } else if ok {
+	// 	svcMonitor := metrics.GenerateServiceMonitor(svc)
+	// 	err = r.CreateOrUpdate(svcMonitor, instance, func() error {
+	// 		return nil
+	// 	})
+	// 	if err != nil {
+	// 		reqLogger.Error(err, "Failed to reconcile ServiceMonitor")
+	// 		return r.ManageError(err, appsodyv1alpha1.StatusConditionTypeReconciled, instance)
+	// 	}
+	// } else {
+	// 	reqLogger.Info(fmt.Sprintf("%s is not supported", "monitoring.coreos.com/v1"))
+	// }
 
 	if instance.Spec.Storage != nil {
 		// Delete Deployment if exists
@@ -346,7 +362,7 @@ func (r *ReconcileAppsodyApplication) Reconcile(request reconcile.Request) (reco
 		}
 	}
 
-	if ok, err := r.IsGroupVersionSupported(routev1.SchemeGroupVersion.String()); err != nil {
+	if ok, err := r.IsGroupVersionSupported(routev1.SchemeGroupVersion.String(), "Route"); err != nil {
 		reqLogger.Error(err, fmt.Sprintf("Failed to check if %s is supported", routev1.SchemeGroupVersion.String()))
 		r.ManageError(err, appsodyv1alpha1.StatusConditionTypeReconciled, instance)
 	} else if ok {
